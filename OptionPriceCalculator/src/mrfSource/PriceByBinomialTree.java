@@ -1,5 +1,7 @@
 package mrfSource;
 
+import view.ViewController;
+
 public class PriceByBinomialTree {
 
 	/**

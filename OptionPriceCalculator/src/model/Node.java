@@ -1,4 +1,4 @@
-package mrfSource;
+package model;
 
 public class Node {
 

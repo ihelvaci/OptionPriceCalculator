@@ -1,4 +1,4 @@
-package mrfSource;
+package view;
 
 import java.awt.TrayIcon.MessageType;
 import java.awt.event.ActionEvent;
@@ -16,6 +16,10 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.plaf.IconUIResource;
 import javax.swing.text.IconView;
+
+import model.MathManager;
+import model.Node;
+import model.Tree;
 
 public class ViewController implements ActionListener, ItemListener {
 

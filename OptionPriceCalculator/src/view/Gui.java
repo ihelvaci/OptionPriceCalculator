@@ -1,4 +1,4 @@
-package mrfSource;
+package view;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
