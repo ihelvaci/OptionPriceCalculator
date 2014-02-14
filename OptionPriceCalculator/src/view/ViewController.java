@@ -7,18 +7,12 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.HashMap;
 
-
-
-
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
-
-
-import controller.CalculateControllerInterface;
+import controller.CalculatorController;
 import model.CalculatorModel;
-import model.CalculatorModelInterface;
 
 
 public class ViewController implements ActionListener, ItemListener, ResultObserverInterface {
@@ -36,14 +30,14 @@ public class ViewController implements ActionListener, ItemListener, ResultObser
 	//MathManager mathManager;
 	//Node[][] treenode;
 	//Tree tree;
-	CalculatorModelInterface model;
-	CalculateControllerInterface controller;
+	CalculatorModel model;
+	CalculatorController controller;
 	
 	//for formating numbers
 	java.text.DecimalFormat df=new java.text.DecimalFormat();
 	
 	
-	public ViewController(CalculateControllerInterface controller, CalculatorModelInterface model) {
+	public ViewController(CalculatorController controller, CalculatorModel model) {
 		this.model = model;
 		this.controller = controller;
 		model.registerObserver(this);
@@ -59,17 +53,15 @@ public class ViewController implements ActionListener, ItemListener, ResultObser
 		switch(option) {
 		
 			case "calculate" :
-				if(americanOption == false && europeanOption == false) {
-					JOptionPane.showMessageDialog(gui.getContentPane(), "Please,  select one of european or american option.");
-					return;
-				}
-				
-				if(put == false && call == false) {
-					JOptionPane.showMessageDialog(gui.getContentPane(), "Please,  select call or put.");
-					return;
-				}
-				
+			{
 				getDateFromView();
+				
+				controller.isCall(call);
+				controller.isPut(put);
+				controller.isAmerican(americanOption);
+				controller.isEuropean(europeanOption);
+				
+				controller.checkOptions();
 				
 				try {
 					controller.setStockPrice(Double.parseDouble(dataFromView.get("Stock price").getText()));
@@ -77,13 +69,7 @@ public class ViewController implements ActionListener, ItemListener, ResultObser
 					controller.setFreeRiskRate(Double.parseDouble(dataFromView.get("Free-risk rate").getText()));
 					controller.setVolatility(Double.parseDouble(dataFromView.get("Volatility").getText()));
 					controller.setTime(Double.parseDouble(dataFromView.get("Time").getText()));
-					controller.setIntervals(Integer.parseInt(dataFromView.get("Intervals").getText()));
-					
-					controller.isCall(call);
-					controller.isPut(put);
-					controller.isAmerican(americanOption);
-					controller.isEuropean(europeanOption);
-					
+					controller.setIntervals(Integer.parseInt(dataFromView.get("Intervals").getText()));					
 				} catch(NumberFormatException ex) {
 					JOptionPane.showMessageDialog(gui.getParent(), "Please validate your data" + "\n" + ex);
 					return;
@@ -92,29 +78,13 @@ public class ViewController implements ActionListener, ItemListener, ResultObser
 					return;
 				}
 				controller.calculate();
-				/*
-				try {
-					int intervals = Integer.parseInt(dataFromView.get("Intervals").getText());
-					System.out.println("Intervals: " + intervals);
-					tree = new Tree(intervals);
-					treenode = tree.createTree();
-					mathManager = new MathManager(Double.parseDouble(dataFromView.get("Stock price").getText()), Double.parseDouble(dataFromView.get("Strike price").getText()), Double.parseDouble(dataFromView.get("Free-risk rate").getText()), Double.parseDouble(dataFromView.get("Volatility").getText()), Double.parseDouble(dataFromView.get("Time").getText()), intervals);
-				} catch(NumberFormatException ex) {
-					JOptionPane.showMessageDialog(gui.getParent(), "Please validate your data" + "\n" + ex);
-					return;
-				} catch(NullPointerException ex) {
-					JOptionPane.showMessageDialog(gui.getParent(), "Please validate your data" + "\n" + ex);
-					return;
-				}
-				
-				doCalculate();
 				break;
-			*/
+			}
 			case "clear" :
-	
-				clearSettings();
+			{
+				clearData();
 				break;
-
+			}
 		}
 		
 	}
@@ -148,21 +118,8 @@ public class ViewController implements ActionListener, ItemListener, ResultObser
 	
 	private void getDateFromView() { this.dataFromView = gui.getTextFields(); }
 	
-	private void clearSettings() {
-		europeanOption = false;
-		americanOption = false;
-		call = false;
-		put = false;
-		gui.clearTextFields();
-		/*try {
-			if(!dataFromView.isEmpty()) {
-				dataFromView.clear();
-			}
-			
-		} catch (java.lang.NullPointerException ex) {
-			return;
-		}*/
-		
+	private void clearData() {
+		gui.clearTextFields();		
 	}
 	
 	/*private void doCalculate() {
@@ -259,5 +216,17 @@ public class ViewController implements ActionListener, ItemListener, ResultObser
 	public void uptadeResult() {
 		gui.setBSPrice(df.format(model.getBlackScholesResult()));
 		gui.setPriceLabels(df.format(model.getBinominalResult()));
+	}
+
+
+	@Override
+	public void callPutError() {
+		JOptionPane.showMessageDialog(gui.getContentPane(), "Please,  select one of european or american option.");
+	}
+
+
+	@Override
+	public void americanEuropeError() {
+		JOptionPane.showMessageDialog(gui.getContentPane(), "Please,  select call or put.");
 	}
 }

@@ -1,14 +1,15 @@
 package controller;
 
 import view.ViewController;
-import model.CalculatorModelInterface;
+import model.CalculatorModel;
 
 public class CalculatorController implements CalculateControllerInterface {
 
-	CalculatorModelInterface model;
+	CalculatorModel model;
 	ViewController view;
+	boolean call, put, american, european, check;
 	
-	public CalculatorController(CalculatorModelInterface model) {
+	public CalculatorController(CalculatorModel model) {
 		this.model = model;
 		this.view = new ViewController(this, model);
 		
@@ -40,18 +41,39 @@ public class CalculatorController implements CalculateControllerInterface {
 	public double getBlackScholesResult() { return model.getBlackScholesResult(); }
 
 	@Override
-	public void calculate() { model.calculate(); }
+	public void isCall(boolean b) { model.isCall(b); call = b; }
 
 	@Override
-	public void isCall(boolean b) { model.isCall(b); }
+	public void isPut(boolean b) { model.isPut(b); put = b; }
 
 	@Override
-	public void isPut(boolean b) { model.isPut(b); }
+	public void isEuropean(boolean b) { model.isEuropean(b); american = b; }
 
 	@Override
-	public void isEuropean(boolean b) { model.isEuropean(b); }
-
+	public void isAmerican(boolean b) { model.isAmerican(b); european = b; }
+	
 	@Override
-	public void isAmerican(boolean b) { model.isAmerican(b); }
+	public void calculate() {
+		
+		if(check == true)
+			model.calculate();
+	}
+	
+	public void checkOptions() {
+		
+		if(american == false && european == false) {
+			view.callPutError();
+			check = false;
+			return;
+		}
+		
+		if(put == false && call == false) {
+			view.americanEuropeError();
+			check = false;
+			return;
+		}
+		
+		check = true;
+	}
 
 }

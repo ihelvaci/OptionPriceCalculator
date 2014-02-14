@@ -12,8 +12,7 @@ public class PriceByBinomialTree {
 	public static void main(String[] args) {
 		
 		CalculatorModel model = new CalculatorModel();
-		CalculatorController controller = new CalculatorController(model);
-		//controller.printUnderlyingPrice();
+		new CalculatorController(model);
 	}
 
 }
