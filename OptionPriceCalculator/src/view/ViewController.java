@@ -1,27 +1,27 @@
 package view;
 
-import java.awt.TrayIcon.MessageType;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.text.NumberFormat;
 import java.util.HashMap;
-import java.util.zip.DataFormatException;
 
-import javax.swing.Icon;
-import javax.swing.JLabel;
+
+
+
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
-import javax.swing.plaf.IconUIResource;
-import javax.swing.text.IconView;
 
-import model.MathManager;
-import model.Node;
-import model.Tree;
 
-public class ViewController implements ActionListener, ItemListener {
+
+import controller.CalculateControllerInterface;
+import model.CalculatorModel;
+import model.CalculatorModelInterface;
+
+
+public class ViewController implements ActionListener, ItemListener, ResultObserverInterface {
 
 	boolean americanOption = false;
 	boolean europeanOption = false;
@@ -33,15 +33,20 @@ public class ViewController implements ActionListener, ItemListener {
 	Gui gui;
 	
 	//model
-	MathManager mathManager;
-	Node[][] treenode;
-	Tree tree;
+	//MathManager mathManager;
+	//Node[][] treenode;
+	//Tree tree;
+	CalculatorModelInterface model;
+	CalculateControllerInterface controller;
 	
 	//for formating numbers
 	java.text.DecimalFormat df=new java.text.DecimalFormat();
 	
 	
-	public ViewController() {
+	public ViewController(CalculateControllerInterface controller, CalculatorModelInterface model) {
+		this.model = model;
+		this.controller = controller;
+		model.registerObserver(this);
 		df.setMaximumFractionDigits(2);
 		df.setMinimumFractionDigits(2);
 	}
@@ -63,8 +68,31 @@ public class ViewController implements ActionListener, ItemListener {
 					JOptionPane.showMessageDialog(gui.getContentPane(), "Please,  select call or put.");
 					return;
 				}
+				
 				getDateFromView();
 				
+				try {
+					controller.setStockPrice(Double.parseDouble(dataFromView.get("Stock price").getText()));
+					controller.setStrikePrice(Double.parseDouble(dataFromView.get("Strike price").getText()));
+					controller.setFreeRiskRate(Double.parseDouble(dataFromView.get("Free-risk rate").getText()));
+					controller.setVolatility(Double.parseDouble(dataFromView.get("Volatility").getText()));
+					controller.setTime(Double.parseDouble(dataFromView.get("Time").getText()));
+					controller.setIntervals(Integer.parseInt(dataFromView.get("Intervals").getText()));
+					
+					controller.isCall(call);
+					controller.isPut(put);
+					controller.isAmerican(americanOption);
+					controller.isEuropean(europeanOption);
+					
+				} catch(NumberFormatException ex) {
+					JOptionPane.showMessageDialog(gui.getParent(), "Please validate your data" + "\n" + ex);
+					return;
+				} catch(NullPointerException ex) {
+					JOptionPane.showMessageDialog(gui.getParent(), "Please validate your data" + "\n" + ex);
+					return;
+				}
+				controller.calculate();
+				/*
 				try {
 					int intervals = Integer.parseInt(dataFromView.get("Intervals").getText());
 					System.out.println("Intervals: " + intervals);
@@ -81,7 +109,7 @@ public class ViewController implements ActionListener, ItemListener {
 				
 				doCalculate();
 				break;
-			
+			*/
 			case "clear" :
 	
 				clearSettings();
@@ -95,7 +123,7 @@ public class ViewController implements ActionListener, ItemListener {
 		gui = new Gui(this, this);
 	}
 	
-	public void printUnderlyingPrice() {
+	/*public void printUnderlyingPrice() {
 		
 		for(int i=0; i<treenode.length; i++) {
 			for(int j=0; j<i+1; j++) {
@@ -116,7 +144,7 @@ public class ViewController implements ActionListener, ItemListener {
 			}
 			System.out.println();
 		}
-	}
+	}*/
 	
 	private void getDateFromView() { this.dataFromView = gui.getTextFields(); }
 	
@@ -137,7 +165,7 @@ public class ViewController implements ActionListener, ItemListener {
 		
 	}
 	
-	private void doCalculate() {
+	/*private void doCalculate() {
 		mathManager.optionUnderlyingPrice(treenode);
 		
 		if(call == true) {
@@ -181,7 +209,7 @@ public class ViewController implements ActionListener, ItemListener {
 		//printUnderlyingPrice();
 		//printPrice();
 		//clearSettings();
-	}
+	}*/
 
 	@Override
 	public void itemStateChanged(ItemEvent e) {
@@ -224,5 +252,12 @@ public class ViewController implements ActionListener, ItemListener {
 			}
 		}*/
 		
+	}
+
+
+	@Override
+	public void uptadeResult() {
+		gui.setBSPrice(df.format(model.getBlackScholesResult()));
+		gui.setPriceLabels(df.format(model.getBinominalResult()));
 	}
 }

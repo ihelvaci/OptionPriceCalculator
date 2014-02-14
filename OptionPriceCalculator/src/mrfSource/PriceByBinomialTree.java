@@ -1,5 +1,7 @@
 package mrfSource;
 
+import model.CalculatorModel;
+import controller.CalculatorController;
 import view.ViewController;
 
 public class PriceByBinomialTree {
@@ -9,8 +11,8 @@ public class PriceByBinomialTree {
 	 */
 	public static void main(String[] args) {
 		
-		ViewController controller = new ViewController();
-		controller.createGui();
+		CalculatorModel model = new CalculatorModel();
+		CalculatorController controller = new CalculatorController(model);
 		//controller.printUnderlyingPrice();
 	}
 
