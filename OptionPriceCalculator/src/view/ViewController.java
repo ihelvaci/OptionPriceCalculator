@@ -16,20 +16,13 @@ import model.CalculatorModel;
 
 
 public class ViewController implements ActionListener, ItemListener, ResultObserverInterface {
-
+/*
 	boolean americanOption = false;
 	boolean europeanOption = false;
 	boolean call = false;
-	boolean put = false;
-	//view
-	//JTextField[] dataFromView;
+	boolean put = false;*/
 	HashMap<String, JTextField> dataFromView;
 	Gui gui;
-	
-	//model
-	//MathManager mathManager;
-	//Node[][] treenode;
-	//Tree tree;
 	CalculatorModel model;
 	CalculatorController controller;
 	
@@ -55,12 +48,12 @@ public class ViewController implements ActionListener, ItemListener, ResultObser
 			case "calculate" :
 			{
 				getDateFromView();
-				
+				/*
 				controller.isCall(call);
 				controller.isPut(put);
 				controller.isAmerican(americanOption);
 				controller.isEuropean(europeanOption);
-				
+				*/
 				controller.checkOptions();
 				
 				try {
@@ -122,52 +115,6 @@ public class ViewController implements ActionListener, ItemListener, ResultObser
 		gui.clearTextFields();		
 	}
 	
-	/*private void doCalculate() {
-		mathManager.optionUnderlyingPrice(treenode);
-		
-		if(call == true) {
-			mathManager.callPriceLast(treenode);
-			System.out.println("Call");
-			
-			if(americanOption == true) {
-				mathManager.americanCallOptionPrice(treenode);
-				System.out.println("American");
-			}
-			else {
-				mathManager.europeanPutCallOptionPrice(treenode);
-				mathManager.BlackScholes('c');
-				
-				gui.setPriceLabels(df.format(treenode[0][0].getPrice()));
-				gui.setBSPrice(df.format(mathManager.getBlackScholesCallPrice()));
-				
-				System.out.println(mathManager.getBlackScholesCallPrice());
-				System.out.println("European");
-			}
-		}
-		if(put == true) {
-			mathManager.putPriceLast(treenode);
-			System.out.println("Put");
-			
-			if(americanOption == true) {
-				mathManager.americanPutOptionPrice(treenode);
-				System.out.println("American");
-			}
-			else {
-				mathManager.europeanPutCallOptionPrice(treenode);
-				mathManager.BlackScholes('p');
-				
-				gui.setPriceLabels(df.format(treenode[0][0].getPrice()));
-				gui.setBSPrice(df.format(mathManager.getBlackScholesPutPrice()));
-				
-				System.out.println(mathManager.getBlackScholesPutPrice());
-				System.out.println("European");
-			}
-		}
-		//printUnderlyingPrice();
-		//printPrice();
-		//clearSettings();
-	}*/
-
 	@Override
 	public void itemStateChanged(ItemEvent e) {
 		
@@ -176,39 +123,29 @@ public class ViewController implements ActionListener, ItemListener, ResultObser
 			String choose = ((JRadioButton) e.getSource()).getActionCommand();
 			switch(choose) {
 			case "European option":
-				europeanOption = true;
+				//europeanOption = true;
+				controller.isEuropean(true);
+				controller.isAmerican(false);
 				break;
 			case "American option":
-				americanOption = true;
+				//americanOption = true;
+				controller.isAmerican(true);
+				controller.isEuropean(false);
 				break;
 			case "PUT":
-				put = true;
-				call = false;
+				//put = true;
+				//call = false;
+				controller.isPut(true);
+				controller.isCall(false);
 				break;
 			case "CALL":
-				call = true;
-				put = false;
+				//call = true;
+				//put = false;
+				controller.isCall(true);
+				controller.isPut(false);
 				break;
 			}
 		}
-		/*else {
-			String choose = ((JRadioButton) e.getSource()).getActionCommand();
-			switch(choose) {
-			case "European option":
-				europeanOption = false;
-				break;
-			case "American option":
-				americanOption = false;
-				break;
-			case "PUT":
-				put = false;
-				break;
-			case "CALL":
-				call = false;
-				break;
-			}
-		}*/
-		
 	}
 
 
